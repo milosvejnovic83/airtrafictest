@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="table.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div class="container-fluid">
+	<h3>Table</h3>
+	<table id="records_table" class="table">
+	<thead>
+	<tr>
+        <th>#</th>
+        <th>Altitude</th>
+        <th>Icao</th>
+    </tr>
+	</thead>
+	<tbody></tbody>
+	</table>
+	</div>
+	
+	<script>
+	$.ajax({
+        url: 'https://public-api.adsbexchange.com/VirtualRadar/AircraftList.json?lat=' + localStorage.getItem("latitude")
+				+ '&lng=' + localStorage.getItem("longitude") + '&fDstL=0&fDstU=100',
+        type: 'GET',
+        dataType: "jsonp",
+        success: displayAll
+    });
+
+		function displayAll(data){
+
+			var s = data.acList;
+			var $tbody = $("#records_table tbody");
+			var $tr;
+				
+			s.forEach(function (record, i) {
+				$tr = $('<tr>');
+				$tbody.append($tr);
+				$tr.append($("<td>").html(i+1));
+				$tr.append($("<td>").html(record.Alt));
+				$tr.append($("<td>").html(record.Icao));
+				$tr.append($("<td>").html(record.Type).hide());
+				$tr.append($("<td>").html(record.From).hide());
+				$tr.append($("<td>").html(record.To).hide());
+			});	
+		
+		$(function () {
+			$('table.table tr').click(function () {
+				var rowData = $(this).children("td").map(function() {
+				return $(this).text();
+			}).get();
+			localStorage.setItem("manufacturer",rowData[3]);
+			localStorage.setItem("origin",rowData[4]);
+			localStorage.setItem("destination",rowData[5]);
+			//console.log(rowData[3]);
+			window.location.href = 'details.html'
+			});
+		})
+	}	
+	</script>
+	
+</body>
+</html>
